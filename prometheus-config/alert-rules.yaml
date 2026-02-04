@@ -1,0 +1,63 @@
+groups:
+  - name: custom-app.rules
+    rules:
+      - alert: CustomAppHighErrorRate
+        expr: |
+          sum(rate(custom_app_request_errors_total[5m]))
+          /
+          sum(rate(custom_app_requests_total[5m]))
+          > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Custom app error rate above 5%"
+          description: "Error ratio over last 5m exceeded 5%."
+
+      - alert: CustomAppLatencyP95High
+        expr: |
+          histogram_quantile(0.95, sum(rate(custom_app_request_latency_seconds_bucket[5m])) by (le))
+          > 0.5
+        for: 10m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Custom app p95 latency high"
+          description: "P95 latency over 500ms for 10m."
+
+  - name: cluster-resources.rules
+    rules:
+      - alert: NodeCPUUsageHigh
+        expr: |
+          100 * (1 - avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Node CPU usage > 85%"
+          description: "CPU usage high on {{ $labels.instance }}."
+
+      - alert: NodeMemoryUsageHigh
+        expr: |
+          100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Node memory usage > 85%"
+          description: "Memory usage high on {{ $labels.instance }}."
+
+      - alert: KubernetesPodCrashLooping
+        expr: |
+          increase(kube_pod_container_status_restarts_total[10m]) > 3
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Pod crash looping"
+          description: "Container restarts > 3 in 10m for {{ $labels.pod }}."

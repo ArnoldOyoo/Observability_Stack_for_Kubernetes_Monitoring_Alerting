@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-metrics-app
+  labels:
+    app: custom-metrics-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: custom-metrics-app
+  template:
+    metadata:
+      labels:
+        app: custom-metrics-app
+    spec:
+      containers:
+        - name: app
+          image: your-docker-repo/custom-metrics-app:latest
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-metrics-app
+  labels:
+    app: custom-metrics-app
+spec:
+  selector:
+    app: custom-metrics-app
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
