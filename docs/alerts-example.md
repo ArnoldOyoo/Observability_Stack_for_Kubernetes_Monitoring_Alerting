@@ -1,6 +1,6 @@
 # Example Alert Firing
 
-Below is a redacted example alert notification you can use in the repo.
+Below is a redacted example alert notification
 
 ```text
 ALERTS at 2026-02-04T16:12:41Z
