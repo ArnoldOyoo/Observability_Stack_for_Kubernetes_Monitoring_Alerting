@@ -1,8 +1,5 @@
 # Observability Stack for Kubernetes (Monitoring + Alerting)
 
-![CI](https://github.com/your-org/observability-stack/actions/workflows/ci.yaml/badge.svg)
-![Terraform](https://img.shields.io/badge/terraform-fmt-blue)
-
 Kubernetes observability platform using Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics, and a custom metrics app. Deployed via Helm into an AWS-hosted Kubernetes cluster created by Terraform.
 
 ## layout
