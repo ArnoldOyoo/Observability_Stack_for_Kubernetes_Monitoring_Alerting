@@ -2,6 +2,33 @@
 
 Kubernetes observability platform using Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics, and a custom metrics app. Deployed via Helm into an AWS-hosted Kubernetes cluster created by Terraform.
 
+flowchart LR
+  users((Users)) --> app[Custom Metrics App]
+  app --> svc[Service]
+  svc -->|/metrics| prom[Prometheus]
+  prom --> am[Alertmanager]
+  prom --> graf[Grafana]
+  prom --> ne[node-exporter]
+  prom --> ksm[kube-state-metrics]
+  am --> notify[Slack/Email/Pager]
+  graf --> dashboards[Custom Dashboards]
+
+  subgraph EKS
+    app
+    svc
+    prom
+    am
+    graf
+    ne
+    ksm
+  end
+
+  terraform[Terraform] --> EKS
+  helm[Helm] --> prom
+  helm --> graf
+  helm --> am
+
+
 ## layout
 
 - `terraform-cluster/` - EKS cluster provisioning (VPC + EKS).
