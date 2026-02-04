@@ -63,7 +63,3 @@ Diagram in `docs/architecture.md`.
 ## Runbook
 
 Troubleshooting and validation steps in `docs/runbook.md`.
-
-## Notes
-
-- Update the CI badge URL to match your GitHub org and repo.
