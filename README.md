@@ -4,61 +4,32 @@ Kubernetes observability platform using Prometheus, Grafana, Alertmanager, node-
 
 ```mermaid
 flowchart LR
-  %% =====================
-  %% People
-  %% =====================
-  User[👤 User<br/>Views dashboards & alerts]:::person
+  users((Users)) --> app[Custom Metrics App]
+  app --> svc[Service]
+  svc -->|/metrics| prom[Prometheus]
+  prom --> am[Alertmanager]
+  prom --> graf[Grafana]
+  prom --> ne[node-exporter]
+  prom --> ksm[kube-state-metrics]
+  am --> notify[Slack/Email/Pager]
+  graf --> dashboards[Custom Dashboards]
 
-  %% =====================
-  %% System Boundary
-  %% =====================
-  subgraph System["📊 Observability Platform (AWS EKS)"]
-    direction LR
-
-    %% Containers
-    App[📦 Custom Metrics App<br/><small>Exposes business metrics</small>]:::container
-    Svc[🔌 Kubernetes Service<br/><small>Metrics endpoint</small>]:::container
-
-    Prom[📈 Prometheus<br/><small>Metrics scraping & storage</small>]:::container
-    AM[🚨 Alertmanager<br/><small>Alert routing & grouping</small>]:::container
-    Graf[📉 Grafana<br/><small>Visualization & dashboards</small>]:::container
-
-    NE[🖥️ node-exporter<br/><small>Node-level metrics</small>]:::container
-    KSM[☸️ kube-state-metrics<br/><small>Kubernetes object metrics</small>]:::container
+  subgraph EKS
+    app
+    svc
+    prom
+    am
+    graf
+    ne
+    ksm
   end
 
-  %% =====================
-  %% External Systems
-  %% =====================
-  Notify[📬 Notification Systems<br/><small>Slack / Email / PagerDuty</small>]:::external
-
-  %% =====================
-  %% Relationships
-  %% =====================
-  User -->|Views dashboards| Graf
-  User -->|Receives alerts| Notify
-
-  App -->|Exposes metrics| Svc
-  Svc -->|Scraped via /metrics| Prom
-
-  Prom -->|Scrapes metrics| NE
-  Prom -->|Scrapes metrics| KSM
-  Prom -->|Evaluates rules| AM
-  Prom -->|Queries metrics| Graf
-
-  AM -->|Sends alerts| Notify
-
-  %% =====================
-  %% Styling
-  %% =====================
-  classDef person fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px
-  classDef container fill:#FFFFFF,stroke:#424242,stroke-width:1.5px
-  classDef external fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px
-
-  style System fill:#FAFAFA,stroke:#90A4AE,stroke-width:2px
-
-
+  terraform[Terraform] --> EKS
+  helm[Helm] --> prom
+  helm --> graf
+  helm --> am
 ```
+
 
 
 ## layout
