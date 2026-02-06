@@ -4,30 +4,56 @@ Kubernetes observability platform using Prometheus, Grafana, Alertmanager, node-
 
 ```mermaid
 flowchart LR
-  users((Users)) --> app[Custom Metrics App]
-  app --> svc[Service]
-  svc -->|/metrics| prom[Prometheus]
-  prom --> am[Alertmanager]
-  prom --> graf[Grafana]
-  prom --> ne[node-exporter]
-  prom --> ksm[kube-state-metrics]
-  am --> notify[Slack/Email/Pager]
-  graf --> dashboards[Custom Dashboards]
+  Users [icon: users, color: green]
 
-  subgraph EKS
-    app
-    svc
-    prom
-    am
-    graf
-    ne
-    ksm
-  end
+Custom Metrics App [icon: bar-chart, label: "Custom Metrics App"]
 
-  terraform[Terraform] --> EKS
-  helm[Helm] --> prom
-  helm --> graf
-  helm --> am
+Service [icon: server, label: "Service", color: yellow, colorMode: outline]
+
+Prometheus [icon: prometheus, color: orange, colorMode: bold]
+
+Alertmanager [icon: bell, label: "Alertmanager", color: blue]
+
+Grafana [icon: grafana, color: red]
+
+Node Exporter [icon: cpu, label: "node-exporter"]
+
+Kube State Metrics [icon: kubernetes, label: "kube-state-metrics", color: blue]
+
+Slack Email Pager [icon: mail, label: "Slack/Email/Pager", color: red]
+
+Custom Dashboards [icon: layout, label: "Custom Dashboards", color: green]
+
+Terraform [icon: terraform, color: purple]
+
+Helm [icon: helm, color: blue, styleMode: watercolor, colorMode: outline]
+
+// EKS group
+EKS [icon: aws-eks] {
+  Custom Metrics App
+  Service
+  Prometheus
+  Alertmanager
+  Grafana
+  Node Exporter
+  Kube State Metrics
+}
+
+// Connections
+Users > Custom Metrics App
+Custom Metrics App > Service
+Service > Prometheus: /metrics
+Prometheus > Alertmanager
+Prometheus > Grafana
+Prometheus > Node Exporter
+Prometheus > Kube State Metrics
+Alertmanager > Slack Email Pager
+Grafana > Custom Dashboards
+
+Terraform > EKS
+Helm > Prometheus
+Helm > Grafana
+Helm > Alertmanager
 ```
 
 
