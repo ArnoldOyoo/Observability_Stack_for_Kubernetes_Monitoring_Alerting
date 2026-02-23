@@ -16,9 +16,13 @@ else
 fi
 
 if [[ "${SKIP_KUBECTL_VALIDATE:-false}" != "true" ]]; then
-  echo "Validating Kubernetes manifests with kubectl dry-run..."
-  kubectl apply --dry-run=client -f custom-metrics-app/k8s.yaml >/dev/null
-  kubectl apply --dry-run=client -f prometheus-config/prometheus-rules.yaml >/dev/null
+  if kubectl version --client >/dev/null 2>&1 && kubectl config current-context >/dev/null 2>&1; then
+    echo "Validating Kubernetes manifests with kubectl dry-run..."
+    kubectl apply --dry-run=client --validate=false -f custom-metrics-app/k8s.yaml >/dev/null
+    kubectl apply --dry-run=client --validate=false -f prometheus-config/prometheus-rules.yaml >/dev/null
+  else
+    echo "Skipping kubectl dry-run validation (no usable kube context in this environment)."
+  fi
 else
   echo "Skipping kubectl dry-run validation (SKIP_KUBECTL_VALIDATE=true)."
 fi

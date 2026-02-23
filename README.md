@@ -8,6 +8,36 @@ It uses:
 - Prometheus + Grafana + Alert rules
 - A small custom metrics app
 
+## Architecture
+
+```mermaid
+flowchart LR
+  users((Users)) --> app[Custom Metrics App]
+  app --> svc[Service]
+  svc -->|/metrics| prom[Prometheus]
+  prom --> am[Alertmanager]
+  prom --> graf[Grafana]
+  prom --> ne[node-exporter]
+  prom --> ksm[kube-state-metrics]
+  am --> notify[Slack/Email/Pager]
+  graf --> dashboards[Custom Dashboards]
+
+  subgraph Kubernetes
+    app
+    svc
+    prom
+    am
+    graf
+    ne
+    ksm
+  end
+
+  terraform[Terraform] --> Kubernetes
+  helm[Helm] --> prom
+  helm --> graf
+  helm --> am
+```
+
 ## What I actually validated
 
 - custom app metrics are scraped by Prometheus (`custom-metrics-app` targets are `UP`)
