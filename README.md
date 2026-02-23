@@ -1,50 +1,42 @@
-# Observability Stack for Kubernetes (Monitoring + Alerting)
+# Kubernetes Observability Stack
 
-Kubernetes observability platform using Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics, and a custom metrics app. Deployed via Helm into an AWS-hosted Kubernetes cluster created by Terraform.
+A practical observability project I built to monitor a Kubernetes app end-to-end.
 
-```mermaid
-flowchart LR
-  users((Users)) --> app[Custom Metrics App]
-  app --> svc[Service]
-  svc -->|/metrics| prom[Prometheus]
-  prom --> am[Alertmanager]
-  prom --> graf[Grafana]
-  prom --> ne[node-exporter]
-  prom --> ksm[kube-state-metrics]
-  am --> notify[Slack/Email/Pager]
-  graf --> dashboards[Custom Dashboards]
+It uses:
+- Terraform (cluster infra)
+- Helm + kube-prometheus-stack
+- Prometheus + Grafana + Alert rules
+- A small custom metrics app
 
-  subgraph EKS
-    app
-    svc
-    prom
-    am
-    graf
-    ne
-    ksm
-  end
+## What I actually validated
 
-  terraform[Terraform] --> EKS
-  helm[Helm] --> prom
-  helm --> graf
-  helm --> am
+- custom app metrics are scraped by Prometheus (`custom-metrics-app` targets are `UP`)
+- dashboards render live app metrics in Grafana
+- automated verification script passes (`make verify-stack`)
+
+## Proof
+
+### Prometheus target health
+![Prometheus target health](docs/screenshots/prometheus-target-health.png)
+
+### Grafana custom metrics dashboard
+![Grafana custom metrics dashboard](docs/screenshots/grafana-custom-metrics-dashboard.png)
+
+### Verification run
+![Verify stack success](docs/screenshots/verify-stack-success.png)
+
+## How to run
+
+```bash
+make preflight
+make deploy-stack APP_IMAGE="$APP_IMAGE"
+make verify-stack
 ```
 
+For local demo without AWS, I also ran this on a `kind` cluster.
 
+## Notes
 
-## layout
-
-- `terraform-cluster/` - EKS cluster provisioning (VPC + EKS).
-- `helm-values/` - Helm values for kube-prometheus-stack.
-- `prometheus-config/` - Alert rules and Prometheus config snippets.
-- `grafana-dashboards/` - Custom dashboards.
-- `custom-metrics-app/` - App exposing metrics endpoint.
-- `docs/` - Architecture, screenshots, and alert examples.
-
-## Deploy flow
-
-1. Provision the cluster using `terraform-cluster/`.
-2. Install kube-prometheus-stack with values from `helm-values/`.
-3. Apply alert rules from `prometheus-config/`.
-4. Deploy `custom-metrics-app/` and verify metrics scrape.
-5. Import dashboards from `grafana-dashboards/`.
+- evidence logs are in `docs/evidence/`
+- dashboards are in `grafana-dashboards/`
+- this repo includes fixes made during testing (dashboard import + verify script reliability)

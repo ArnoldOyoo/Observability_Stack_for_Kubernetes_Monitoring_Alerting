@@ -1,6 +1,8 @@
 SHELL := /bin/bash
 
-.PHONY: terraform-init terraform-apply kubeconfig helm-install rules-apply app-deploy dashboards-import
+APP_IMAGE ?= your-docker-repo/custom-metrics-app:latest
+
+.PHONY: terraform-init terraform-apply kubeconfig helm-install rules-apply app-deploy dashboards-import preflight deploy-stack verify-stack validate
 
 terraform-init:
 	cd terraform-cluster && terraform init
@@ -22,15 +24,27 @@ rules-apply:
 	kubectl apply -f prometheus-config/prometheus-rules.yaml
 
 app-deploy:
-	kubectl apply -f custom-metrics-app/k8s.yaml
+	sed 's|your-docker-repo/custom-metrics-app:latest|$(APP_IMAGE)|g' custom-metrics-app/k8s.yaml | kubectl apply -f -
 
 
 dashboards-import:
 	kubectl create configmap grafana-dashboard-cluster-resources \
 		--from-file=grafana-dashboards/cluster-resources.json \
 		-n monitoring \
-		-o yaml --dry-run=client | kubectl label -f - grafana_dashboard=1 --overwrite | kubectl apply -f -
+		-o yaml --dry-run=client | kubectl label --local -f - grafana_dashboard=1 --overwrite -o yaml | kubectl apply -f -
 	kubectl create configmap grafana-dashboard-custom-app \
 		--from-file=grafana-dashboards/custom-app.json \
 		-n monitoring \
-		-o yaml --dry-run=client | kubectl label -f - grafana_dashboard=1 --overwrite | kubectl apply -f -
+		-o yaml --dry-run=client | kubectl label --local -f - grafana_dashboard=1 --overwrite -o yaml | kubectl apply -f -
+
+preflight:
+	./scripts/preflight.sh
+
+deploy-stack:
+	./scripts/deploy.sh
+
+verify-stack:
+	./scripts/verify.sh
+
+validate:
+	./scripts/validate.sh

@@ -17,3 +17,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
+
+## Build and push image
+
+```bash
+docker build -t <your-registry>/custom-metrics-app:<tag> custom-metrics-app
+docker push <your-registry>/custom-metrics-app:<tag>
+```
+
+Use this image during deployment:
+
+```bash
+make app-deploy APP_IMAGE=<your-registry>/custom-metrics-app:<tag>
+```
+
+The Kubernetes resources are deployed into namespace `monitoring`.

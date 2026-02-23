@@ -1,0 +1,24 @@
+./scripts/verify.sh
+Checking namespace and pods...
+NAME                                                       READY   STATUS    RESTARTS      AGE
+custom-metrics-app-dcbc44498-2phbp                         1/1     Running   2 (20m ago)   60m
+custom-metrics-app-dcbc44498-9jzfg                         1/1     Running   2 (20m ago)   60m
+kube-prometheus-stack-grafana-686bc88f4f-xjlwt             3/3     Running   0             9m47s
+kube-prometheus-stack-kube-state-metrics-774cbcbd5-5hc76   1/1     Running   2 (20m ago)   60m
+kube-prometheus-stack-operator-57f5f55494-47r5q            1/1     Running   3 (19m ago)   60m
+kube-prometheus-stack-prometheus-node-exporter-5nq4n       1/1     Running   2 (20m ago)   60m
+prometheus-kube-prometheus-stack-prometheus-0              2/2     Running   4 (20m ago)   57m
+Checking custom app rollout...
+deployment "custom-metrics-app" successfully rolled out
+Checking Prometheus, Grafana, Alertmanager pods...
+NAME                                                       READY   STATUS    RESTARTS      AGE
+kube-prometheus-stack-grafana-686bc88f4f-xjlwt             3/3     Running   0             9m48s
+kube-prometheus-stack-kube-state-metrics-774cbcbd5-5hc76   1/1     Running   2 (20m ago)   60m
+kube-prometheus-stack-operator-57f5f55494-47r5q            1/1     Running   3 (19m ago)   60m
+kube-prometheus-stack-prometheus-node-exporter-5nq4n       1/1     Running   2 (20m ago)   60m
+Waiting for Prometheus and Grafana pods to become Ready...
+statefulset rolling update complete 1 pods at revision prometheus-kube-prometheus-stack-prometheus-f749f66dc...
+deployment "kube-prometheus-stack-grafana" successfully rolled out
+Verifying custom scrape target from Prometheus API...
+Prometheus target check passed: 2/2 custom-metrics-app target(s) are UP.
+Verification completed.

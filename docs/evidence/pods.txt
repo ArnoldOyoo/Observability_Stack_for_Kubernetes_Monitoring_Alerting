@@ -1,0 +1,8 @@
+NAME                                                       READY   STATUS    RESTARTS      AGE     IP            NODE                     NOMINATED NODE   READINESS GATES
+custom-metrics-app-dcbc44498-2phbp                         1/1     Running   2 (20m ago)   60m     10.244.0.10   obs-demo-control-plane   <none>           <none>
+custom-metrics-app-dcbc44498-9jzfg                         1/1     Running   2 (20m ago)   60m     10.244.0.5    obs-demo-control-plane   <none>           <none>
+kube-prometheus-stack-grafana-686bc88f4f-xjlwt             3/3     Running   0             9m50s   10.244.0.17   obs-demo-control-plane   <none>           <none>
+kube-prometheus-stack-kube-state-metrics-774cbcbd5-5hc76   1/1     Running   2 (20m ago)   60m     10.244.0.8    obs-demo-control-plane   <none>           <none>
+kube-prometheus-stack-operator-57f5f55494-47r5q            1/1     Running   3 (19m ago)   60m     10.244.0.9    obs-demo-control-plane   <none>           <none>
+kube-prometheus-stack-prometheus-node-exporter-5nq4n       1/1     Running   2 (20m ago)   60m     172.18.0.2    obs-demo-control-plane   <none>           <none>
+prometheus-kube-prometheus-stack-prometheus-0              2/2     Running   4 (20m ago)   57m     10.244.0.11   obs-demo-control-plane   <none>           <none>

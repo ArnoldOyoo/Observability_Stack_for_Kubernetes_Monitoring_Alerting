@@ -77,7 +77,7 @@
       "id": 3,
       "targets": [
         {
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (namespace)",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"\"}[5m])) by (namespace)",
           "legendFormat": "{{namespace}}"
         }
       ],
@@ -95,7 +95,7 @@
       "id": 4,
       "targets": [
         {
-          "expr": "sum(container_memory_working_set_bytes{container!=""}) by (namespace)",
+          "expr": "sum(container_memory_working_set_bytes{container!=\"\"}) by (namespace)",
           "legendFormat": "{{namespace}}"
         }
       ],

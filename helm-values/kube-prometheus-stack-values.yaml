@@ -25,12 +25,6 @@ grafana:
       label: grafana_dashboard
       folder: /var/lib/grafana/dashboards
   adminPassword: "change-me"
-  additionalDataSources:
-    - name: Prometheus
-      type: prometheus
-      access: proxy
-      url: http://kube-prometheus-stack-prometheus:9090
-      isDefault: true
 
 prometheus:
   prometheusSpec:

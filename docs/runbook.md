@@ -1,45 +1,53 @@
 # Runbook
 
-This runbook is a quick reference for verifying the observability stack and troubleshooting common issues.
+Operational checklist for deploying and validating the observability stack.
 
-## Post-deploy verification
-
-1. Confirm monitoring namespace
+## 1. Preflight
 
 ```bash
-kubectl get ns monitoring
+make preflight
 ```
 
-2. Check Prometheus targets
+If this fails, install missing tools, set `APP_IMAGE`, and create `terraform-cluster/terraform.tfvars`.
+
+## 2. Deploy
+
+### Full deploy (provisions cluster + installs stack)
+
+```bash
+make deploy-stack APP_IMAGE="$APP_IMAGE"
+```
+
+### Existing EKS cluster
+
+```bash
+SKIP_TERRAFORM=true make deploy-stack APP_IMAGE="$APP_IMAGE"
+```
+
+## 3. Verify
+
+```bash
+make verify-stack
+```
+
+This checks:
+
+- `monitoring` namespace exists
+- custom app deployment rollout succeeded
+- kube-prometheus-stack pods are present
+- Prometheus has an `UP` target for `custom-metrics-app`
+
+## 4. Access services locally
 
 ```bash
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
-```
-
-Open Prometheus, then verify targets are `UP` for:
-- `kube-state-metrics`
-- `node-exporter`
-- `custom-metrics-app`
-
-3. Check Grafana
-
-```bash
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
-```
-
-Import dashboards if not already present and verify panels render.
-
-4. Check Alertmanager
-
-```bash
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
 ```
 
-Open Alertmanager and verify the routes and receivers.
+## 5. Force a test alert
 
-## Force a test alert
-
-Create a temporary rule to validate notifications:
+Apply a short-lived synthetic rule:
 
 ```yaml
 - alert: TestAlert
@@ -52,18 +60,16 @@ Create a temporary rule to validate notifications:
     description: "This is a synthetic test alert"
 ```
 
-Apply the rule, wait for it to fire, then remove it.
+After the alert fires and notifications are confirmed, remove the rule.
 
-## Common issues
+## Troubleshooting
 
-- **No custom metrics**
-  - Verify the custom app pods are running and listening on port 8000.
-  - Check the `additionalScrapeConfigs` in `helm-values/kube-prometheus-stack-values.yaml`.
-
-- **Dashboards empty**
-  - Confirm Grafana datasource points to Prometheus.
-  - Ensure dashboards were imported and have the correct UID.
-
-- **Alerts not firing**
-  - Confirm `PrometheusRule` exists in `monitoring` namespace.
-  - Check Prometheus rule evaluation errors.
+- No custom app target in Prometheus:
+  - `kubectl -n monitoring get pods -l app=custom-metrics-app`
+  - confirm app pods are `Running` and serving `:8000/metrics`
+- Dashboards empty:
+  - confirm Prometheus datasource in Grafana
+  - confirm dashboard ConfigMaps labeled `grafana_dashboard=1`
+- Alerts not firing:
+  - `kubectl -n monitoring get prometheusrule observability-alerts`
+  - check Prometheus rule status and expression errors

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: custom-metrics-app
+  namespace: monitoring
   labels:
     app: custom-metrics-app
 spec:
@@ -17,6 +18,7 @@ spec:
       containers:
         - name: app
           image: your-docker-repo/custom-metrics-app:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           readinessProbe:
@@ -36,6 +38,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: custom-metrics-app
+  namespace: monitoring
   labels:
     app: custom-metrics-app
 spec:
